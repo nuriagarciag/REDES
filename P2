@@ -1,0 +1,144 @@
+import requests
+
+//Tarea 1
+(*Petición GET simple, con ella obtendremos una página HTML*)
+url = "https://httpbin.org/html"
+response = requests.get(url)
+
+print("Código de estado:")
+print(response.status_code)
+
+print("\nCabeceras:")
+print(response.headers)
+
+print("\nCuerpo de la respuesta:")
+print(response.text)
+
+//Esta petición va a dar error 404 ya que html2 no existe
+url = "https://httpbin.org/html2"
+response = requests.get(url)
+
+print("Código de estado:")
+print(response.status_code)
+
+print("\nCabeceras:")
+print(response.headers)
+
+print("\nCuerpo de la respuesta:")
+print(response.text)
+
+//El endpoint de esta petición va a devolver un formulario HTML
+url = "https://httpbin.org/forms/post"
+response = requests.get(url)
+
+print("Código de estado:")
+print(response.status_code)
+
+print("\nCabeceras:")
+print(response.headers)
+
+print("\nCuerpo de la respuesta:")
+print(response.text)
+
+//Ahora se envian los datos con los que queremos completar el frormulario anterior
+url = "https://httpbin.org/post"
+
+data = {
+    "custname": "Juan Perez",
+    "custtel": "123456789",
+    "custemail": "juan@email.com",
+    "size": "medium",
+    "topping": "bacon",
+    "delivery": "14:00",
+    "comments": "Sin cebolla"
+}
+
+response = requests.post(url, data=data)
+
+print("Código de estado:")
+print(response.status_code)
+
+print("\nCabeceras:")
+print(response.headers)
+
+print("\nCuerpo de la respuesta:")
+print(response.text)
+
+//Tarea 2 (Lo mismo pero utilizando sockets)
+import socket
+
+# Crear socket TCP
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# Conectar al servidor (httpbin.org, puerto 80)
+server_address = ("httpbin.org", 80)
+client_socket.connect(server_address)
+
+# Construir la petición HTTP manualmente
+http_request = "GET /html HTTP/1.1\r\n"
+http_request += "Host: httpbin.org\r\n"
+http_request += "Connection: close\r\n"
+http_request += "\r\n"
+
+# Enviar la petición
+client_socket.sendall(http_request.encode())
+
+# Recibir la respuesta
+response = b""
+while True:
+    data = client_socket.recv(4096)
+    if not data:
+        break
+    response += data
+
+# Cerrar socket
+client_socket.close()
+
+# Mostrar respuesta
+print(response.decode())
+
+//Terea 3 (Uso de requests)
+
+//Con HTTP 
+response = requests.get("http://httpbin.org/html")
+
+print("Código de estado:", response.status_code)
+print("\nCabeceras:\n", response.headers)
+print("\nCuerpo:\n", response.text)
+
+//HTTPS
+response = requests.get("https://httpbin.org/html")
+
+print("Código de estado:", response.status_code)
+print("\nCabeceras:\n", response.headers)
+print("\nCuerpo:\n", response.text)
+
+/Tarea 4
+import requests
+from bs4 import BeautifulSoup
+
+# Cambia la URL por la de tu práctica 1
+url = "http://localhost:8000"
+
+# 1. Conectarse
+response = requests.get(url)
+
+# 2. Crear objeto BeautifulSoup
+soup = BeautifulSoup(response.text, "html.parser")
+
+# 3. Contar etiquetas <p>
+paragraphs = soup.find_all("p")
+print("Número de etiquetas <p>:", len(paragraphs))
+
+# 4. Mostrar contenido de h1, h2 y p
+print("\nContenido de etiquetas h1:")
+for h1 in soup.find_all("h1"):
+    print("-", h1.get_text())
+
+print("\nContenido de etiquetas h2:")
+for h2 in soup.find_all("h2"):
+    print("-", h2.get_text())
+
+print("\nContenido de etiquetas p:")
+for p in paragraphs:
+    print("-", p.get_text())
